@@ -1,4 +1,16 @@
 services:
+db:
+    image: mysql:5.7
+    container_name: wp_mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wpuser
+      MYSQL_PASSWORD: wppass
+      MYSQL_ROOT_PASSWORD: rootpass
+    volumes:
+      - db_data:/var/lib/mysql
+
   nginx:
     image: nginx:latest
     ports:
