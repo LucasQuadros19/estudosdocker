@@ -2,32 +2,49 @@ services:
   nginx:
     image: nginx:latest
     ports:
-      - "80:80"
+      - "8080:80"
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./frontend:/usr/share/nginx/html
+    depends_on:
+      - backend
     networks:
       - front
+
+  backend:
+    image: node:20
+    command: node index.js
+    networks:
+      - front
+      - back
+    environment:
+      DB_HOST: postgres
+      DB_USER: app
+      DB_PASSWORD: app
+      DB_NAME: app
     depends_on:
-      - app
-  app:
-    image: python:3.12-slim
-    container_name: app
-    command: python -m server 3000
-  networks:
-    - front
-    - back
+      postgres:
+        condition: service_healthy
+
   postgres:
     image: postgres:15
     environment:
-      POSTGRES_USER: estu
-      POSTGRES_PASSWORD: estu
-      POSTGRES_DB: estu
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+      POSTGRES_DB: app
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
       - back
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 networks:
-    front:
-    back:
+  front:
+  back:
+
 volumes:
-    pgdata:
+  pgdata:

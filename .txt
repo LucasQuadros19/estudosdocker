@@ -1,0 +1,11 @@
+docker network inspect doc
+        volume
+limpa redes nao usadas 
+docker network prune
+        volume
+docker system prune  -a --volumes apagara tudo com os volumes 
+
+docker exec -it ssss bash
+curl http://backend:3000
+
+network ls
